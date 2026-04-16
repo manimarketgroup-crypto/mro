@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Saved Papers — MANI Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@400;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--void:#03040A;--deep:#06080F;--surface:#0A0D18;--raised:#0E1220;--hover:#131728;--card:#0C1020;--g1:#00FFB2;--g2:#00D4FF;--p1:#9B6DFF;--pk:#FF6B9D;--am:#FFBE0B;--bl:#60C8FF;--t1:#F0F2FA;--t2:#8B96B0;--t3:#3D4A6B;--ti:#03040A;--b1:rgba(255,255,255,0.04);--b2:rgba(255,255,255,0.08);--b3:rgba(255,255,255,0.14);--b4:rgba(255,255,255,0.22);--fd:'Outfit',sans-serif;--fb:'Space Grotesk',sans-serif;--fm:'JetBrains Mono',monospace;--nav:62px;--sb:218px;--rp:276px;--r1:6px;--r2:10px;--r3:14px;--r4:20px;--r5:28px;}
+
+
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 10% -10%,rgba(0,255,178,0.05) 0%,transparent 55%),radial-gradient(ellipse 60% 50% at 90% 110%,rgba(155,109,255,0.06) 0%,transparent 55%);}
+
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="../index.html" class="nav-brand">
+    <div class="logo-mark">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="#4FFFB0" stroke-width="1.5"/>
+        <circle cx="16" cy="16" r="3" fill="#4FFFB0"/>
+        <line x1="16" y1="2" x2="16" y2="8" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="16" y1="24" x2="16" y2="30" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="2" y1="16" x2="8" y2="16" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="24" y1="16" x2="30" y2="16" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-name">MANI</span>
+      <span class="brand-tagline">Research Network</span>
+    </div>
+  </a>
+  <div class="nav-actions" style="margin-left:auto;">
+    <a href="../index.html" class="btn-ghost-lg" style="font-size:13px;">← Back to Feed</a>
+  </div>
+</nav>
+
+<div style="max-width:800px;margin:0 auto;padding:calc(var(--nav)+40px) 24px 40px;position:relative;z-index:1;">
+  <h1 style="font-family:var(--fd);font-size:26px;font-weight:800;margin-bottom:6px;">Saved Papers</h1>
+  <p style="font-size:14px;color:var(--t3);margin-bottom:28px;">Your personal research reading list</p>
+  <div id="savedList">
+    <div style="text-align:center;padding:48px;color:var(--t3);">Loading…</div>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    if (!auth.requireAuth()) return;
+    const list = document.getElementById('savedList');
+    try {
+      const { papers } = await api.users.saved();
+      if (!papers?.length) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔖</div>
+            <div class="empty-title">No saved papers yet</div>
+            <p class="empty-sub">When you bookmark papers from the feed, they'll appear here.</p>
+            <button class="btn-primary" style="margin-top:16px;" onclick="window.location.href='../index.html'">Browse Feed</button>
+          </div>`;
+        return;
+      }
+      list.innerHTML = papers.map(p => {
+        const color    = deptColor(p.department);
+        const initials = p.primaryAuthor?.name?.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'?';
+        return `
+          <div class="paper-card" style="--dept-color:${color};margin-bottom:12px;">
+            <span class="dept-pill" style="color:${color};border-color:${color}33;background:${color}11;">${deptLabel(p.department)}</span>
+            <h3 style="font-family:var(--fd);font-size:16px;font-weight:700;margin:10px 0 8px;line-height:1.3;">${escapeHtml(p.title)}</h3>
+            <p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${escapeHtml(p.abstract||'')}</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="author-avatar" style="width:26px;height:26px;font-size:10px;">${initials}</div>
+                <div>
+                  <div style="font-size:12px;font-weight:500;">${escapeHtml(p.primaryAuthor?.name||'Unknown')}</div>
+                  <div style="font-size:11px;color:var(--t3);">${formatDate(p.createdAt)}</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="action-btn" onclick="api.papers.download('${p._id}')">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download
+                </button>
+                <button class="action-btn" onclick="unsavePaper('${p._id}',this)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    } catch (err) {
+      list.innerHTML = `<div style="color:var(--pk);text-align:center;padding:32px;">${err.message}</div>`;
+    }
+  });
+
+  async function unsavePaper(id, btn) {
+    try {
+      await api.papers.save(id);
+      btn.closest('.paper-card').remove();
+      showToast('Removed from saved papers', 'info');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+</script>
+</body>
+</html>

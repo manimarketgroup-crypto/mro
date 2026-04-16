@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile — MANI Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@400;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--void:#03040A;--deep:#06080F;--surface:#0A0D18;--raised:#0E1220;--hover:#131728;--card:#0C1020;--g1:#00FFB2;--g2:#00D4FF;--p1:#9B6DFF;--pk:#FF6B9D;--am:#FFBE0B;--bl:#60C8FF;--t1:#F0F2FA;--t2:#8B96B0;--t3:#3D4A6B;--ti:#03040A;--b1:rgba(255,255,255,0.04);--b2:rgba(255,255,255,0.08);--b3:rgba(255,255,255,0.14);--b4:rgba(255,255,255,0.22);--fd:'Outfit',sans-serif;--fb:'Space Grotesk',sans-serif;--fm:'JetBrains Mono',monospace;--nav:62px;--sb:218px;--rp:276px;--r1:6px;--r2:10px;--r3:14px;--r4:20px;--r5:28px;}
+
+    .profile-layout { max-width: 900px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 1; }
+    .back-link { color:var(--t3);font-size:13px;display:inline-flex;align-items:center;gap:6px;margin-bottom:20px; }
+    .back-link:hover { color:var(--g1); }
+    .profile-hero {
+      background:var(--raised); border:1px solid var(--b2);
+      border-radius:var(--r4); padding:32px; margin-bottom:20px;
+      display:flex; gap:24px; align-items:flex-start;
+    }
+    .profile-avatar-lg {
+      width:80px; height:80px; border-radius:50%;
+      background:linear-gradient(135deg,var(--g1),var(--p1));
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--fd); font-size:26px; font-weight:800;
+      color:var(--ti); flex-shrink:0;
+    }
+    .profile-info { flex:1; min-width:0; }
+    .profile-name { font-family:var(--fd); font-size:24px; font-weight:800; margin-bottom:4px; }
+    .profile-role { font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; padding:3px 10px; border-radius:999px; margin-bottom:10px; display:inline-block; }
+    .role-researcher { background:rgba(0,255,178,0.08); color:var(--g1); }
+    .role-reviewer { background:rgba(155,109,255,0.1); color:var(--p1); }
+    .role-editor { background:rgba(79,195,247,0.12); color:var(--bl); }
+    .role-admin { background:rgba(255,215,0,0.12); color:var(--am); }
+    .profile-meta { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:12px; }
+    .profile-meta-item { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--t3); }
+    .profile-bio { font-size:14px; color:var(--t2); line-height:1.7; }
+    .profile-stats { display:flex; gap:28px; margin-top:16px; padding-top:16px; border-top:1px solid var(--b1); }
+    .pstat-item { text-align:center; }
+    .pstat-num { font-family:var(--fd); font-size:20px; font-weight:800; color:var(--t1); }
+    .pstat-lbl { font-size:11px; color:var(--t3); }
+    .profile-actions { display:flex; gap:10px; margin-left:auto; flex-shrink:0; }
+    .tabs { display:flex; gap:2px; margin-bottom:16px; }
+    .tab-btn { background:none; border:none; color:var(--t3); font-family:var(--fb); font-size:13px; font-weight:500; padding:8px 16px; border-radius:var(--r2); cursor:pointer; transition:all 0.15s; }
+    .tab-btn:hover { color:var(--t1); background:var(--raised); }
+    .tab-btn.active { color:var(--g1); background:rgba(0,255,178,0.08); }
+    .panel { display:none; }
+    .panel.active { display:block; }
+    .edit-modal { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:200; display:none; align-items:center; justify-content:center; padding:20px; }
+    .edit-modal.open { display:flex; }
+    .edit-card { background:var(--raised); border:1px solid var(--b2); border-radius:var(--r4); padding:32px; width:100%; max-width:520px; max-height:88vh; overflow-y:auto; position:relative; animation:slideUp 0.25s var(--ease); }
+    @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+    .edit-title { font-family:var(--fd); font-size:18px; font-weight:700; margin-bottom:24px; }
+    .interest-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .interest-tag { background:var(--hover); border:1px solid var(--b2); color:var(--t3); font-size:12px; padding:3px 10px; border-radius:999px; cursor:pointer; transition:all 0.15s; }
+    .interest-tag:hover, .interest-tag.selected { border-color:var(--g1); color:var(--g1); background:rgba(0,255,178,0.08); }
+    .loading-placeholder { text-align:center; padding:48px; color:var(--t3); font-size:14px; }
+  
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 10% -10%,rgba(0,255,178,0.05) 0%,transparent 55%),radial-gradient(ellipse 60% 50% at 90% 110%,rgba(155,109,255,0.06) 0%,transparent 55%);}
+
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="../index.html" class="nav-brand">
+    <div class="logo-mark">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="#4FFFB0" stroke-width="1.5"/>
+        <circle cx="16" cy="16" r="3" fill="#4FFFB0"/>
+        <line x1="16" y1="2" x2="16" y2="8" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="16" y1="24" x2="16" y2="30" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="2" y1="16" x2="8" y2="16" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="24" y1="16" x2="30" y2="16" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-name">MANI</span>
+      <span class="brand-tagline">Research Network</span>
+    </div>
+  </a>
+  <div class="nav-actions" style="margin-left:auto;">
+    <button class="btn-primary-sm" onclick="window.location.href='upload.html'">
+      + Publish
+    </button>
+  </div>
+</nav>
+
+<div class="profile-layout" style="padding-top:calc(var(--nav) + 40px);">
+  <a href="../index.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to Feed
+  </a>
+
+  <div id="profileContent">
+    <div class="loading-placeholder">Loading profile…</div>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="edit-modal" id="editModal">
+  <div class="edit-card">
+    <button class="modal-close" onclick="closeEdit()" style="position:absolute;top:16px;right:16px;">×</button>
+    <div class="edit-title">Edit Profile</div>
+    <form id="editForm" onsubmit="saveProfile(event)">
+      <div class="form-group">
+        <label class="form-label">Full name</label>
+        <input type="text" class="form-input" id="editName" required maxlength="100"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bio</label>
+        <textarea class="form-textarea" id="editBio" maxlength="500" placeholder="Tell the community about your research…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Institution</label>
+        <input type="text" class="form-input" id="editInstitution" placeholder="Your university or organisation"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Department</label>
+        <select class="form-select" id="editDepartment">
+          <option value="">Select…</option>
+          <option value="cs_ai">CS / AI</option>
+          <option value="space">Space Research</option>
+          <option value="medical_bio">Medical / Bio</option>
+          <option value="mechanical">Mechanical</option>
+          <option value="electrical">Electrical</option>
+          <option value="civil">Civil</option>
+          <option value="environmental">Environmental</option>
+          <option value="aerospace">Aerospace</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <input type="text" class="form-input" id="editLocation" placeholder="City, Country" maxlength="100"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Website</label>
+        <input type="url" class="form-input" id="editWebsite" placeholder="https://yoursite.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ORCID ID</label>
+        <input type="text" class="form-input" id="editOrcid" placeholder="0000-0000-0000-0000" maxlength="30"/>
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%;" id="saveBtn">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script>
+  let profileUser = null;
+  let profilePapers = [];
+  let currentTab = 'papers';
+
+  async function loadProfile() {
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get('id');
+    const me     = auth.getUser();
+    const targetId = userId || (me && me._id);
+
+    if (!targetId) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    try {
+      const { user, papers } = await api.users.get(targetId);
+      profileUser  = user;
+      profilePapers = papers || [];
+      renderProfile(me && me._id === user._id);
+    } catch (err) {
+      document.getElementById('profileContent').innerHTML = `
+        <div class="empty-state"><div class="empty-title">Could not load profile</div><p class="empty-sub">${err.message}</p></div>`;
+    }
+  }
+
+  function renderProfile(isOwn) {
+    const u        = profileUser;
+    const initials = u.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    const roleClass = `role-${u.role}`;
+
+    document.getElementById('profileContent').innerHTML = `
+      <div class="profile-hero">
+        <div class="profile-avatar-lg">${initials}</div>
+        <div class="profile-info">
+          <h1 class="profile-name">${escapeHtml(u.name)}</h1>
+          <span class="profile-role ${roleClass}">${u.role}</span>
+          <div class="profile-meta">
+            ${u.institution ? `<span class="profile-meta-item">🏛 ${escapeHtml(u.institution)}</span>` : ''}
+            ${u.department  ? `<span class="profile-meta-item">🔬 ${deptLabel(u.department)}</span>` : ''}
+            ${u.location    ? `<span class="profile-meta-item">📍 ${escapeHtml(u.location)}</span>` : ''}
+            ${u.website     ? `<span class="profile-meta-item"><a href="${encodeURI(u.website)}" target="_blank" rel="noopener" style="color:var(--g1);">🔗 Website</a></span>` : ''}
+          </div>
+          ${u.bio ? `<p class="profile-bio">${escapeHtml(u.bio)}</p>` : ''}
+          ${u.researchInterests?.length ? `
+            <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px;">
+              ${u.researchInterests.map(i => `<span class="kw-tag">${escapeHtml(i)}</span>`).join('')}
+            </div>` : ''}
+          <div class="profile-stats">
+            <div class="pstat-item"><div class="pstat-num">${u.paperCount || 0}</div><div class="pstat-lbl">Papers</div></div>
+            <div class="pstat-item"><div class="pstat-num">${u.totalCitations || 0}</div><div class="pstat-lbl">Citations</div></div>
+            <div class="pstat-item"><div class="pstat-num">${u.followers?.length || 0}</div><div class="pstat-lbl">Followers</div></div>
+            <div class="pstat-item"><div class="pstat-num">${u.following?.length || 0}</div><div class="pstat-lbl">Following</div></div>
+          </div>
+        </div>
+        <div class="profile-actions">
+          ${isOwn ? `
+            <button class="btn-ghost-lg" onclick="openEdit()">Edit Profile</button>
+            <button class="btn-primary-sm" onclick="window.location.href='upload.html'">+ Publish</button>
+          ` : auth.isLoggedIn() ? `
+            <button class="btn-ghost-lg" id="followBtn" onclick="toggleFollow('${u._id}')">Follow</button>
+          ` : ''}
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('papers',this)">Papers (${profilePapers.length})</button>
+        <button class="tab-btn" onclick="switchTab('followers',this)">Followers (${u.followers?.length || 0})</button>
+        <button class="tab-btn" onclick="switchTab('following',this)">Following (${u.following?.length || 0})</button>
+      </div>
+
+      <div id="panel-papers" class="panel active">${renderPapersPanel()}</div>
+      <div id="panel-followers" class="panel">${renderUsersPanel(u.followers || [])}</div>
+      <div id="panel-following" class="panel">${renderUsersPanel(u.following || [])}</div>
+    `;
+
+    if (isOwn) {
+      prefillEditForm();
+    }
+  }
+
+  function renderPapersPanel() {
+    if (!profilePapers.length) {
+      return `<div class="empty-state"><div class="empty-icon">📄</div><div class="empty-title">No published papers yet</div><p class="empty-sub">Papers appear here once published.</p></div>`;
+    }
+    return profilePapers.map(p => {
+      const color = deptColor(p.department);
+      return `
+        <div class="paper-card" style="--dept-color:${color};margin-bottom:12px;" onclick="window.location.href='../index.html'">
+          <span class="dept-pill" style="color:${color};border-color:${color}33;background:${color}11;">${deptLabel(p.department)}</span>
+          <span class="status-badge status-${p.status}" style="margin-left:8px;">${(p.status||'').replace(/_/g,' ')}</span>
+          <h3 style="font-family:var(--fd);font-size:15px;font-weight:700;margin:10px 0 6px;">${escapeHtml(p.title)}</h3>
+          <div style="display:flex;gap:16px;font-size:12px;color:var(--t3);">
+            <span>👁 ${formatNumber(p.views||0)}</span>
+            <span>♡ ${formatNumber(p.likes?.length||0)}</span>
+            <span>📅 ${formatDate(p.createdAt)}</span>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderUsersPanel(users) {
+    if (!users?.length) return `<div class="empty-state"><div class="empty-title">None yet</div></div>`;
+    return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">` +
+      users.map(u => {
+        const initials = u.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2) || '?';
+        return `
+          <div class="paper-card" style="cursor:pointer;" onclick="window.location.href='profile.html?id=${u._id}'">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div class="author-avatar" style="width:36px;height:36px;font-size:13px;">${initials}</div>
+              <div>
+                <div style="font-size:13px;font-weight:500;">${escapeHtml(u.name||'')}</div>
+                <div style="font-size:11px;color:var(--t3);">${escapeHtml(u.institution||'')}</div>
+              </div>
+            </div>
+          </div>`;
+      }).join('') + `</div>`;
+  }
+
+  function switchTab(tab, btn) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`panel-${tab}`).classList.add('active');
+  }
+
+  async function toggleFollow(userId) {
+    if (!auth.requireAuth()) return;
+    try {
+      const res = await api.users.follow(userId);
+      const btn = document.getElementById('followBtn');
+      if (btn) btn.textContent = res.following ? 'Following' : 'Follow';
+      showToast(res.following ? 'Now following' : 'Unfollowed', 'success');
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  // ── Edit profile ──
+  function openEdit() {
+    document.getElementById('editModal').classList.add('open');
+  }
+  function closeEdit() {
+    document.getElementById('editModal').classList.remove('open');
+  }
+
+  function prefillEditForm() {
+    if (!profileUser) return;
+    document.getElementById('editName').value        = profileUser.name || '';
+    document.getElementById('editBio').value         = profileUser.bio || '';
+    document.getElementById('editInstitution').value = profileUser.institution || '';
+    document.getElementById('editDepartment').value  = profileUser.department || '';
+    document.getElementById('editLocation').value    = profileUser.location || '';
+    document.getElementById('editWebsite').value     = profileUser.website || '';
+    document.getElementById('editOrcid').value       = profileUser.orcidId || '';
+  }
+
+  async function saveProfile(e) {
+    e.preventDefault();
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      await api.users.updateMe({
+        name:        document.getElementById('editName').value.trim(),
+        bio:         document.getElementById('editBio').value.trim(),
+        institution: document.getElementById('editInstitution').value.trim(),
+        department:  document.getElementById('editDepartment').value,
+        location:    document.getElementById('editLocation').value.trim(),
+        website:     document.getElementById('editWebsite').value.trim(),
+        orcidId:     document.getElementById('editOrcid').value.trim()
+      });
+      showToast('Profile updated successfully', 'success');
+      closeEdit();
+      loadProfile();
+    } catch (err) {
+      showToast(err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Save Changes';
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  document.addEventListener('DOMContentLoaded', loadProfile);
+</script>
+</body>
+</html>

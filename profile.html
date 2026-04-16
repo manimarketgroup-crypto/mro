@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify Email — MANI Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@400;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--void:#03040A;--deep:#06080F;--surface:#0A0D18;--raised:#0E1220;--hover:#131728;--card:#0C1020;--g1:#00FFB2;--g2:#00D4FF;--p1:#9B6DFF;--pk:#FF6B9D;--am:#FFBE0B;--bl:#60C8FF;--t1:#F0F2FA;--t2:#8B96B0;--t3:#3D4A6B;--ti:#03040A;--b1:rgba(255,255,255,0.04);--b2:rgba(255,255,255,0.08);--b3:rgba(255,255,255,0.14);--b4:rgba(255,255,255,0.22);--fd:'Outfit',sans-serif;--fb:'Space Grotesk',sans-serif;--fm:'JetBrains Mono',monospace;--nav:62px;--sb:218px;--rp:276px;--r1:6px;--r2:10px;--r3:14px;--r4:20px;--r5:28px;}
+
+    body { display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px; }
+    .verify-card { background:var(--raised);border:1px solid var(--b2);border-radius:var(--r4);padding:48px 40px;width:100%;max-width:420px;text-align:center;position:relative;z-index:1; }
+    .verify-icon { font-size:52px;margin-bottom:20px; }
+    .verify-title { font-family:var(--fd);font-size:22px;font-weight:800;margin-bottom:10px; }
+    .verify-sub { font-size:14px;color:var(--t3);line-height:1.6;margin-bottom:24px; }
+  </style>
+</head>
+<body>
+<div class="verify-card" id="card">
+  <div class="verify-icon">⏳</div>
+  <div class="verify-title">Verifying your email…</div>
+  <p class="verify-sub">Please wait while we confirm your email address.</p>
+</div>
+<script src="../js/api.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const token = new URLSearchParams(window.location.search).get('token');
+    const card  = document.getElementById('card');
+
+    if (!token) {
+      card.innerHTML = `
+        <div class="verify-icon">✕</div>
+        <div class="verify-title" style="color:var(--pk);">Invalid Link</div>
+        <p class="verify-sub">This verification link is invalid. Please check your email or request a new link.</p>
+        <a href="login.html" class="btn-primary" style="display:inline-flex;margin-top:8px;">Go to Login</a>`;
+      return;
+    }
+
+    try {
+      await api.auth.verifyEmail(token);
+      card.innerHTML = `
+        <div class="verify-icon">✓</div>
+        <div class="verify-title" style="color:var(--g1);">Email Verified!</div>
+        <p class="verify-sub">Your account is now active. You can log in and start publishing research.</p>
+        <a href="login.html" class="btn-primary" style="display:inline-flex;margin-top:8px;text-decoration:none;background:var(--g1);color:var(--ti);padding:10px 24px;border-radius:var(--r4);font-weight:600;">Sign In</a>`;
+    } catch (err) {
+      card.innerHTML = `
+        <div class="verify-icon">✕</div>
+        <div class="verify-title" style="color:var(--pk);">Verification Failed</div>
+        <p class="verify-sub">${err.message || 'This link may have expired. Please sign up again or contact support.'}</p>
+        <a href="signup.html" style="color:var(--g1);font-size:14px;">← Back to Signup</a>`;
+    }
+  });
+</script>
+</body>
+</html>

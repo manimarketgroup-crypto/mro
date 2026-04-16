@@ -1,0 +1,12 @@
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/mani_research
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
+JWT_EXPIRES_IN=7d
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_email_app_password
+CLIENT_URL=http://localhost:3000
+MAX_FILE_SIZE_MB=20
+UPLOAD_PATH=./uploads
+NODE_ENV=development

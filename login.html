@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Publish Research — MANI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@400;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--void:#03040A;--deep:#06080F;--surface:#0A0D18;--raised:#0E1220;--hover:#131728;--card:#0C1020;--g1:#00FFB2;--g2:#00D4FF;--p1:#9B6DFF;--pk:#FF6B9D;--am:#FFBE0B;--bl:#60C8FF;--t1:#F0F2FA;--t2:#8B96B0;--t3:#3D4A6B;--ti:#03040A;--b1:rgba(255,255,255,0.04);--b2:rgba(255,255,255,0.08);--b3:rgba(255,255,255,0.14);--b4:rgba(255,255,255,0.22);--fd:'Outfit',sans-serif;--fb:'Space Grotesk',sans-serif;--fm:'JetBrains Mono',monospace;--nav:62px;--sb:218px;--rp:276px;--r1:6px;--r2:10px;--r3:14px;--r4:20px;--r5:28px;}
+
+    .upload-layout { max-width: 800px; margin: 0 auto; padding: 40px 24px; position: relative; z-index: 1; }
+    .page-header { margin-bottom: 32px; }
+    .page-title { font-family: var(--fd); font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+    .page-sub { font-size: 14px; color: var(--t3); }
+    .upload-card { background: var(--raised); border: 1px solid var(--b2); border-radius: var(--r4); padding: 32px; }
+    .section-title { font-family: var(--fd); font-size: 15px; font-weight: 700; color: var(--t1); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--b1); display: flex; align-items: center; gap: 8px; }
+    .section-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(0,255,178,0.08); border: 1px solid rgba(79,255,176,0.3); color: var(--g1); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .form-section { margin-bottom: 28px; }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .coauthor-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 10px; }
+    .remove-btn { background: none; border: 1px solid var(--b2); color: var(--pk); border-radius: var(--r1); padding: 9px 12px; cursor: pointer; transition: all 0.15s; font-size: 16px; }
+    .remove-btn:hover { background: rgba(255,107,157,0.1); }
+    .add-btn { background: none; border: 1px dashed var(--b3); color: var(--t3); border-radius: var(--r2); padding: 9px 16px; cursor: pointer; font-size: 13px; transition: all 0.15s; margin-top: 4px; }
+    .add-btn:hover { border-color: var(--g1); color: var(--g1); }
+    .keywords-input-wrap { display: flex; gap: 8px; }
+    .keyword-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .kw-removable { display: flex; align-items: center; gap: 5px; background: var(--hover); border: 1px solid var(--b2); border-radius: 999px; padding: 3px 10px; font-size: 12px; font-family: var(--fm); color: var(--t2); }
+    .kw-removable button { background: none; border: none; color: var(--t3); cursor: pointer; font-size: 14px; padding: 0; line-height: 1; }
+    .kw-removable button:hover { color: var(--pk); }
+    .drop-zone {
+      border: 2px dashed var(--b3); border-radius: var(--r3);
+      padding: 40px 24px; text-align: center; cursor: pointer;
+      transition: all 0.2s; position: relative;
+    }
+    .drop-zone:hover, .drop-zone.dragover { border-color: var(--g1); background: rgba(0,255,178,0.05); }
+    .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .drop-icon { font-size: 32px; margin-bottom: 12px; opacity: 0.5; }
+    .drop-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+    .drop-sub { font-size: 12px; color: var(--t3); }
+    .file-preview { display: none; align-items: center; gap: 12px; background: var(--hover); border: 1px solid var(--b2); border-radius: var(--r2); padding: 12px 16px; margin-top: 12px; }
+    .file-icon { font-size: 24px; }
+    .file-name { font-size: 13px; font-weight: 500; color: var(--t1); }
+    .file-size { font-size: 12px; color: var(--t3); }
+    .file-remove { margin-left: auto; background: none; border: none; color: var(--t3); cursor: pointer; font-size: 18px; }
+    .file-remove:hover { color: var(--pk); }
+    .submit-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--b1); }
+    .submit-note { font-size: 12px; color: var(--t3); max-width: 380px; }
+    .submit-btn { background: var(--g1); color: var(--ti); border: none; border-radius: var(--r4); padding: 12px 28px; font-family: var(--fb); font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; white-space: nowrap; }
+    .submit-btn:hover { opacity: 0.9; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .char-count { font-size: 11px; color: var(--t3); text-align: right; margin-top: 4px; }
+    .progress-bar { height: 3px; background: var(--b1); border-radius: 2px; margin-top: 8px; display: none; }
+    .progress-fill { height: 100%; background: var(--g1); border-radius: 2px; width: 0; transition: width 0.3s; }
+    .error-msg { background:rgba(255,107,157,0.1); border:1px solid rgba(255,107,157,0.3); color:var(--pk); font-size:13px; padding:10px 14px; border-radius:var(--r2); margin-bottom:16px; display:none; }
+    .success-card { background:rgba(79,255,176,0.08); border:1px solid rgba(79,255,176,0.2); border-radius:var(--r3); padding:32px; text-align:center; display:none; }
+    .success-icon { font-size:48px; margin-bottom:16px; }
+    .success-title { font-family:var(--fd); font-size:22px; font-weight:700; color:var(--g1); margin-bottom:8px; }
+    .success-sub { font-size:14px; color:var(--t2); }
+  
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 10% -10%,rgba(0,255,178,0.05) 0%,transparent 55%),radial-gradient(ellipse 60% 50% at 90% 110%,rgba(155,109,255,0.06) 0%,transparent 55%);}
+
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="../index.html" class="nav-brand">
+    <div class="logo-mark">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="#4FFFB0" stroke-width="1.5"/>
+        <circle cx="16" cy="16" r="3" fill="#4FFFB0"/>
+        <line x1="16" y1="2" x2="16" y2="8" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="16" y1="24" x2="16" y2="30" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="2" y1="16" x2="8" y2="16" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="24" y1="16" x2="30" y2="16" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-name">MANI</span>
+      <span class="brand-tagline">Research Network</span>
+    </div>
+  </a>
+  <div class="nav-actions" style="margin-left:auto;">
+    <div class="nav-avatar" onclick="window.location.href='profile.html'" title="Profile"><span id="navInitials">?</span></div>
+  </div>
+</nav>
+
+<div class="upload-layout" style="padding-top: calc(var(--nav) + 40px);">
+  <div class="page-header">
+    <a href="../index.html" style="color:var(--t3);font-size:13px;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Feed
+    </a>
+    <h1 class="page-title">Publish Research</h1>
+    <p class="page-sub">Submit your paper for peer review and global publication</p>
+  </div>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div id="successCard" class="success-card">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Paper Submitted!</div>
+    <p class="success-sub">Your research has been submitted for review. You'll receive an email when it's processed.</p>
+    <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;">
+      <button class="submit-btn" onclick="window.location.href='../index.html'">Back to Feed</button>
+      <button style="background:none;border:1px solid var(--b3);color:var(--t2);border-radius:var(--r4);padding:11px 20px;cursor:pointer;font-size:14px;" onclick="resetForm()">Submit Another</button>
+    </div>
+  </div>
+
+  <div id="uploadForm">
+    <form id="paperForm" onsubmit="handleSubmit(event)">
+
+      <!-- Section 1: File -->
+      <div class="upload-card" style="margin-bottom:16px;">
+        <div class="section-title"><span class="section-num">1</span> Paper File</div>
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <input type="file" id="fileInput" accept=".pdf,.doc,.docx" onchange="handleFileSelect(this)"/>
+          <div class="drop-icon">📄</div>
+          <div class="drop-title">Drop your paper here or click to browse</div>
+          <div class="drop-sub">PDF, DOC, or DOCX — max 20 MB</div>
+        </div>
+        <div class="file-preview" id="filePreview">
+          <span class="file-icon">📋</span>
+          <div>
+            <div class="file-name" id="fileName"></div>
+            <div class="file-size" id="fileSize"></div>
+          </div>
+          <button type="button" class="file-remove" onclick="removeFile()">×</button>
+        </div>
+        <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+
+      <!-- Section 2: Basic Info -->
+      <div class="upload-card" style="margin-bottom:16px;">
+        <div class="section-title"><span class="section-num">2</span> Paper Details</div>
+        <div class="form-group">
+          <label class="form-label">Title *</label>
+          <input type="text" class="form-input" id="title" placeholder="Full title of your research paper" required maxlength="300" oninput="updateCount(this,'titleCount',300)"/>
+          <div class="char-count"><span id="titleCount">0</span>/300</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Abstract *</label>
+          <textarea class="form-textarea" id="abstract" placeholder="Provide a concise summary of your research objectives, methodology, results, and conclusions…" required maxlength="3000" style="min-height:160px;" oninput="updateCount(this,'abstractCount',3000)"></textarea>
+          <div class="char-count"><span id="abstractCount">0</span>/3000</div>
+        </div>
+        <div class="row-2">
+          <div class="form-group">
+            <label class="form-label">Department *</label>
+            <select class="form-select" id="department" required>
+              <option value="">Select department…</option>
+              <option value="cs_ai">Computer Science / AI</option>
+              <option value="space">Space Research</option>
+              <option value="medical_bio">Medical / Biotechnology</option>
+              <option value="mechanical">Mechanical Engineering</option>
+              <option value="electrical">Electrical Engineering</option>
+              <option value="civil">Civil Engineering</option>
+              <option value="environmental">Environmental Science</option>
+              <option value="aerospace">Aerospace</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Journal / Conference <span style="color:var(--t3);">(optional)</span></label>
+            <input type="text" class="form-input" id="journal" placeholder="e.g. IEEE, Nature, arXiv"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Keywords *</label>
+          <div class="keywords-input-wrap">
+            <input type="text" class="form-input" id="kwInput" placeholder="Type a keyword and press Enter or comma" onkeydown="handleKwKey(event)" style="flex:1;"/>
+            <button type="button" class="btn-ghost-lg" onclick="addKeyword()" style="padding:8px 14px;font-size:13px;">Add</button>
+          </div>
+          <div class="keyword-tags" id="keywordTags"></div>
+          <span class="form-hint">Add 3–8 relevant keywords</span>
+        </div>
+      </div>
+
+      <!-- Section 3: Authors -->
+      <div class="upload-card" style="margin-bottom:16px;">
+        <div class="section-title"><span class="section-num">3</span> Authors</div>
+        <p style="font-size:13px;color:var(--t3);margin-bottom:16px;">You are automatically added as the primary author. List any co-authors below.</p>
+        <div id="coAuthorsList"></div>
+        <button type="button" class="add-btn" onclick="addCoAuthor()">
+          + Add Co-author
+        </button>
+      </div>
+
+      <!-- Section 4: Publication -->
+      <div class="upload-card" style="margin-bottom:16px;">
+        <div class="section-title"><span class="section-num">4</span> Publication Details <span style="font-size:11px;color:var(--t3);font-family:var(--fb);font-weight:400;">(optional)</span></div>
+        <div class="row-2">
+          <div class="form-group">
+            <label class="form-label">DOI</label>
+            <input type="text" class="form-input" id="doi" placeholder="10.xxxx/xxxxx"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Volume / Issue</label>
+            <input type="text" class="form-input" id="volIssue" placeholder="Vol. 12, Issue 3"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pages</label>
+          <input type="text" class="form-input" id="pages" placeholder="e.g. 1–18" style="max-width:200px;"/>
+        </div>
+      </div>
+
+      <div class="submit-bar">
+        <p class="submit-note">By submitting, you confirm this is original work and you have the rights to publish it on MANI.</p>
+        <button type="submit" class="submit-btn" id="submitBtn">
+          Submit for Review
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!auth.requireAuth()) return;
+    const user = auth.getUser();
+    if (user) {
+      const initials = user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+      document.getElementById('navInitials').textContent = initials;
+    }
+  });
+
+  // ── File handling ──
+  let selectedFile = null;
+
+  function handleFileSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const maxMB = 20;
+    if (file.size > maxMB * 1024 * 1024) {
+      showError(`File too large. Maximum size is ${maxMB}MB.`);
+      return;
+    }
+    selectedFile = file;
+    document.getElementById('dropZone').style.display  = 'none';
+    document.getElementById('filePreview').style.display = 'flex';
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = formatFileSize(file.size);
+  }
+
+  function removeFile() {
+    selectedFile = null;
+    document.getElementById('fileInput').value = '';
+    document.getElementById('dropZone').style.display  = 'block';
+    document.getElementById('filePreview').style.display = 'none';
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  // Drag & drop
+  const dz = document.getElementById('dropZone');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); dz.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      document.getElementById('fileInput').files = e.dataTransfer.files;
+      handleFileSelect(document.getElementById('fileInput'));
+    }
+  });
+
+  // ── Keywords ──
+  const keywords = [];
+
+  function handleKwKey(e) {
+    if (e.key === 'Enter') { e.preventDefault(); addKeyword(); }
+    if (e.key === ',')     { e.preventDefault(); addKeyword(); }
+  }
+
+  function addKeyword() {
+    const inp = document.getElementById('kwInput');
+    const val = inp.value.trim().toLowerCase().replace(/,$/, '');
+    if (!val || keywords.includes(val)) { inp.value = ''; return; }
+    if (keywords.length >= 8) { showError('Maximum 8 keywords allowed.'); return; }
+    keywords.push(val);
+    renderKeywords();
+    inp.value = '';
+  }
+
+  function removeKeyword(kw) {
+    const i = keywords.indexOf(kw);
+    if (i !== -1) keywords.splice(i, 1);
+    renderKeywords();
+  }
+
+  function renderKeywords() {
+    document.getElementById('keywordTags').innerHTML = keywords.map(k => `
+      <span class="kw-removable">${k}<button type="button" onclick="removeKeyword('${k}')">×</button></span>
+    `).join('');
+  }
+
+  // ── Co-authors ──
+  let coAuthorCount = 0;
+
+  function addCoAuthor() {
+    coAuthorCount++;
+    const id  = coAuthorCount;
+    const div = document.createElement('div');
+    div.className = 'coauthor-row';
+    div.id = `ca-${id}`;
+    div.innerHTML = `
+      <div class="form-group" style="margin:0;">
+        <input type="text" class="form-input" placeholder="Full name" id="ca-name-${id}"/>
+      </div>
+      <div class="form-group" style="margin:0;">
+        <input type="text" class="form-input" placeholder="Institution" id="ca-inst-${id}"/>
+      </div>
+      <div class="form-group" style="margin:0;">
+        <input type="email" class="form-input" placeholder="Email (optional)" id="ca-email-${id}"/>
+      </div>
+      <button type="button" class="remove-btn" onclick="removeCoAuthor(${id})">×</button>
+    `;
+    document.getElementById('coAuthorsList').appendChild(div);
+  }
+
+  function removeCoAuthor(id) {
+    document.getElementById(`ca-${id}`)?.remove();
+  }
+
+  function gatherCoAuthors() {
+    const authors = [];
+    for (let i = 1; i <= coAuthorCount; i++) {
+      const name = document.getElementById(`ca-name-${i}`)?.value?.trim();
+      if (!name) continue;
+      authors.push({
+        name,
+        institution: document.getElementById(`ca-inst-${i}`)?.value?.trim() || '',
+        email:       document.getElementById(`ca-email-${i}`)?.value?.trim() || ''
+      });
+    }
+    return authors;
+  }
+
+  // ── Char counters ──
+  function updateCount(el, countId, max) {
+    document.getElementById(countId).textContent = el.value.length;
+  }
+
+  // ── Submit ──
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const err = document.getElementById('errorMsg');
+    err.style.display = 'none';
+
+    if (!selectedFile) { showError('Please upload your paper file.'); return; }
+    if (keywords.length < 1) { showError('Please add at least one keyword.'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    const pb = document.getElementById('progressBar');
+    const pf = document.getElementById('progressFill');
+    pb.style.display = 'block';
+
+    // Animate fake progress (real progress needs XHR)
+    let prog = 0;
+    const progInt = setInterval(() => {
+      prog = Math.min(prog + Math.random() * 15, 90);
+      pf.style.width = prog + '%';
+    }, 300);
+
+    try {
+      const formData = new FormData();
+      formData.append('paper',       selectedFile);
+      formData.append('title',       document.getElementById('title').value.trim());
+      formData.append('abstract',    document.getElementById('abstract').value.trim());
+      formData.append('department',  document.getElementById('department').value);
+      formData.append('keywords',    JSON.stringify(keywords));
+      formData.append('coAuthors',   JSON.stringify(gatherCoAuthors()));
+      formData.append('journal',     document.getElementById('journal').value.trim());
+      formData.append('doi',         document.getElementById('doi').value.trim());
+      formData.append('pages',       document.getElementById('pages').value.trim());
+
+      await api.papers.create(formData);
+
+      clearInterval(progInt);
+      pf.style.width = '100%';
+
+      setTimeout(() => {
+        document.getElementById('uploadForm').style.display = 'none';
+        document.getElementById('successCard').style.display = 'block';
+      }, 400);
+    } catch (error) {
+      clearInterval(progInt);
+      pb.style.display = 'none';
+      showError(error.message);
+      btn.disabled = false;
+      btn.textContent = 'Submit for Review';
+    }
+  }
+
+  function showError(msg) {
+    const err = document.getElementById('errorMsg');
+    err.textContent = msg;
+    err.style.display = 'block';
+    err.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function resetForm() {
+    document.getElementById('uploadForm').style.display = 'block';
+    document.getElementById('successCard').style.display = 'none';
+    document.getElementById('paperForm').reset();
+    removeFile();
+    keywords.length = 0;
+    renderKeywords();
+    document.getElementById('coAuthorsList').innerHTML = '';
+    coAuthorCount = 0;
+  }
+</script>
+</body>
+</html>
