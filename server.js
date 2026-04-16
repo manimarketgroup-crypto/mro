@@ -1,69 +1,15 @@
-<!DOCTYPE html>
-<html lang="en" id="forgot-page">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Forgot Password — MANI Research</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@400;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
-:root{--void:#03040A;--deep:#06080F;--surface:#0A0D18;--raised:#0E1220;--hover:#131728;--card:#0C1020;--g1:#00FFB2;--g2:#00D4FF;--p1:#9B6DFF;--pk:#FF6B9D;--am:#FFBE0B;--bl:#60C8FF;--t1:#F0F2FA;--t2:#8B96B0;--t3:#3D4A6B;--ti:#03040A;--b1:rgba(255,255,255,0.04);--b2:rgba(255,255,255,0.08);--b3:rgba(255,255,255,0.14);--b4:rgba(255,255,255,0.22);--fd:'Outfit',sans-serif;--fb:'Space Grotesk',sans-serif;--fm:'JetBrains Mono',monospace;--nav:62px;--sb:218px;--rp:276px;--r1:6px;--r2:10px;--r3:14px;--r4:20px;--r5:28px;}
+const express = require("express");
+const path = require("path");
 
-    body { display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px; }
-    .auth-card { background:var(--raised);border:1px solid var(--b2);border-radius:var(--r4);padding:40px;width:100%;max-width:400px;position:relative;z-index:1; }
-    .auth-btn { width:100%;background:var(--g1);color:var(--ti);border:none;border-radius:var(--r3);padding:12px;font-family:var(--fb);font-size:15px;font-weight:600;cursor:pointer;transition:opacity 0.15s;margin-top:4px; }
-    .auth-btn:hover { opacity:0.9; }
-    .auth-btn:disabled { opacity:0.5;cursor:not-allowed; }
-    .error-msg { background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.3);color:var(--pk);font-size:13px;padding:10px 14px;border-radius:var(--r2);margin-bottom:16px;display:none; }
-    .success-msg { background:rgba(79,255,176,0.1);border:1px solid rgba(79,255,176,0.3);color:var(--g1);font-size:13px;padding:10px 14px;border-radius:var(--r2);margin-bottom:16px;display:none; }
-    .back-link { display:block;text-align:center;margin-top:16px;font-size:13px;color:var(--g1); }
-  </style>
-</head>
-<body>
-<div class="auth-card">
-  <div style="text-align:center;margin-bottom:24px;">
-    <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
-      <circle cx="16" cy="16" r="14" stroke="#4FFFB0" stroke-width="1.5"/>
-      <circle cx="16" cy="16" r="3" fill="#4FFFB0"/>
-      <line x1="16" y1="2" x2="16" y2="8" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="16" y1="24" x2="16" y2="30" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="2" y1="16" x2="8" y2="16" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="24" y1="16" x2="30" y2="16" stroke="#4FFFB0" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <div style="font-family:var(--fd);font-size:20px;font-weight:800;margin-top:8px;">MANI</div>
-  </div>
-  <h2 style="font-family:var(--fd);font-size:20px;font-weight:700;margin-bottom:6px;">Reset Password</h2>
-  <p style="font-size:13px;color:var(--t3);margin-bottom:24px;">Enter your email and we'll send a reset link.</p>
-  <div class="error-msg" id="errorMsg"></div>
-  <div class="success-msg" id="successMsg"></div>
-  <form onsubmit="handleForgot(event)">
-    <div class="form-group">
-      <label class="form-label">Email address</label>
-      <input type="email" class="form-input" id="email" placeholder="you@university.edu" required/>
-    </div>
-    <button type="submit" class="auth-btn" id="forgotBtn">Send Reset Link</button>
-  </form>
-  <a href="login.html" class="back-link">← Back to login</a>
-</div>
-<script src="../js/api.js"></script>
-<script>
-  async function handleForgot(e) {
-    e.preventDefault();
-    const btn = document.getElementById('forgotBtn');
-    const err = document.getElementById('errorMsg');
-    const ok  = document.getElementById('successMsg');
-    btn.disabled = true; btn.textContent = 'Sending…';
-    err.style.display = 'none'; ok.style.display = 'none';
-    try {
-      await api.auth.forgotPassword(document.getElementById('email').value.trim());
-      ok.textContent = 'If that email exists, a reset link has been sent. Check your inbox.';
-      ok.style.display = 'block';
-    } catch(error) {
-      err.textContent = error.message;
-      err.style.display = 'block';
-      btn.disabled = false; btn.textContent = 'Send Reset Link';
-    }
-  }
-</script>
-</body>
-</html>
+const app = express();
+const PORT = process.env.PORT || 10000;
+
+app.use(express.static(__dirname));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "login.html"));
+});
+
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});
